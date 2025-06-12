@@ -12,11 +12,11 @@ float MemoryMonitor::getUsage()
 	//reads one word at a time from the "file" into "label" until end of the file
 	while (file >> label)
 	{
-		if (label == "MemoryTotal:")
+		if (label == "MemTotal:")
 		{
 			file >> memoryTotal;
 		}
-		else if (label == "MemoryAvailable:")
+		else if (label == "MemAvailable:")
 		{
 			file >> memoryAvailable;
 			break;
