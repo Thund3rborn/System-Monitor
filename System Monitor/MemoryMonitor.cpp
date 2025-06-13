@@ -2,12 +2,18 @@
 #include <fstream>
 #include <string>
 #include <limits>
+#include <stdexcept> // required for std::runtime_error
 
 float MemoryMonitor::getUsage()
 {
-	std::ifstream file("/proc/meminfo");
+	//std::ifstream file("/proc/meminfo"); // for linux
+	std::ifstream file("meminfo_mock.txt"); // for Windows testing purposes
+	if (!file.is_open()) {
+		throw std::runtime_error("Failed to open meminfo_mock.txt. Make sure the file exists in the working directory.");
+	}
 	std::string label;
 	long memoryTotal = 0, memoryAvailable = 0;
+
 
 	//reads one word at a time from the "file" into "label" until end of the file
 	while (file >> label)

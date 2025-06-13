@@ -22,7 +22,11 @@ float CPUMonitor::getUsage() {
 }
 
 void CPUMonitor::readCPUStats(long& idleTime, long& totalTime) {
-    std::ifstream file("/proc/stat");
+    //std::ifstream file("/proc/meminfo"); // for linux
+    std::ifstream file("cpuinfo_mock.txt"); // for Windows testing purposes
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open meminfo_mock.txt. Make sure the file exists in the working directory.");
+    }
     std::string line;
     std::getline(file, line);  //read first line
 

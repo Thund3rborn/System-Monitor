@@ -1,12 +1,12 @@
-#include <iostream>
+﻿#include <iostream>
 #include "CPUMonitor.h"
 #include "MemoryMonitor.h"
 
 #include <chrono>
 #include <thread>
 
-
-int main() {
+int main() 
+{
     CPUMonitor cpu;
     MemoryMonitor memory;
 
