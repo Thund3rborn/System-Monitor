@@ -5,10 +5,13 @@
 #define NOMINMAX
 #include <windows.h>
 
+//return memory usage percentage on Windows using GLobalMemoryStatusEx
 float MemoryReader::getMemoryUsage()
 {
 	MEMORYSTATUSEX memInfo;
 	memInfo.dwLength = sizeof(memInfo);
+
+	//fill memInfo with current memory stats
 	if (!GlobalMemoryStatusEx(&memInfo))
 	{
 		throw std::runtime_error("GlobalMemoryStatusEx failed.");
@@ -18,6 +21,8 @@ float MemoryReader::getMemoryUsage()
 	DWORDLONG available = memInfo.ullAvailPhys;
 
 	if (total == 0) return 0.0f;
+
+	//calculate memory usage %: (used / total ) * 100
 	return 100.0f * (1.0 - static_cast<double>(available) / total);
 }
 
@@ -28,6 +33,7 @@ float MemoryReader::getMemoryUsage()
 
 const std::string MEMORY_FILE = "/proc/meminfo";
 
+//returns memory usage percentage on Linux by parsing /proc/meminfo
 float MemoryReader::getMemoryUsage()
 {
 	std::ifstream file(MEMORY_FILE);
@@ -48,14 +54,17 @@ float MemoryReader::getMemoryUsage()
 		else if (label == "MemAvailable:")
 		{
 			file >> memoryAvailable;
-			break;
+			break;	//stop one we have both values
 		}
 		else
 		{
+			//skip unused lines
 			file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		}
 
 		if (memoryTotal == 0) return 0.0f;
+
+		//calculate memory usage %: (used / total) * 100
 		return 100.0f * (1.0f - static_cast<float>(memoryAvailable / memoryTotal));
 	}
 

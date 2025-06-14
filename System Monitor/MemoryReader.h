@@ -1,9 +1,7 @@
 #pragma once
-#include <fstream>
-
 class MemoryReader
 {
 public:
-	static float getMemoryUsage();
+	static float getMemoryUsage(); //returns Memory usage in percent (0.0 - 100.0)
 };
 
