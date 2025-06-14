@@ -3,11 +3,15 @@
 #include <sstream>
 #include <thread>
 
-CPUMonitor::CPUMonitor() {
+CPUMonitor::CPUMonitor() 
+{
     readCPUStats(prevIdleTime, prevTotalTime);  //initialise with current values
 }
 
-float CPUMonitor::getUsage() {
+float CPUMonitor::getUsage() 
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     long idleTime, totalTime;
     readCPUStats(idleTime, totalTime);  //read new values
 
