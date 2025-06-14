@@ -12,7 +12,11 @@ int main()
 
     while (true)
     {
+#ifdef _WIN32
+        system("cls");
+#else
         system("clear");
+#endif
         std::cout << "=== System Monitor Test ===\n";
         std::cout << "CPU Usage: " << cpu.getUsage() << "%\n";
         std::cout << "Memory usage: " << memory.getUsage() << "%\n";
