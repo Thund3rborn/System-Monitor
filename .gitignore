@@ -364,3 +364,8 @@ FodyWeavers.xsd
 /System Monitor/System Monitor.vcxproj
 /System Monitor/System Monitor.vcxproj.filters
 /System Monitor/sysmon
+/System Monitor/Makefile
+/System Monitor/meminfo_mock.txt
+/System Monitor/cpuinfo_mock.txt
+
+.vs/
