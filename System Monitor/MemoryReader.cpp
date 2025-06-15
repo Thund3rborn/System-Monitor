@@ -62,12 +62,11 @@ float MemoryReader::getMemoryUsage()
 			file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		}
 
-		if (memoryTotal == 0) return 0.0f;
-
-		//calculate memory usage %: (used / total) * 100
-		return 100.0f * (1.0f - static_cast<float>(memoryAvailable / memoryTotal));
 	}
+	if (memoryTotal == 0) return 0.0f;
 
+	//calculate memory usage %: (used / total) * 100
+	return 100.0f * (1.0f - static_cast<float>(memoryAvailable) / memoryTotal);
 }
 
 #endif

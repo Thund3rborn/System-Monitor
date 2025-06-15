@@ -56,13 +56,12 @@ float CPUReader::getCPUUsage()
 
 #else
 
-//Linux implementation will come here later
 #include <fstream>
 #include <sstream>
 #include <thread>
 #include <chrono>
 
-const::std::string CPU_FILE = "/proc/stat";
+const std::string CPU_FILE = "/proc/stat";
 
 //returns CPU usage on Linux using /proc/stat sampling
 float CPUReader::getCPUUsage()
@@ -76,32 +75,36 @@ float CPUReader::getCPUUsage()
 	//read first line of /proc/stat (contains aggregate CPU stats)
 	std::string line;
 	std::getline(file, line);
-	std::istringstream ss(line);
+	std::istringstream ss1(line);
 	std::string cpuLabel;
-	long user, nice, system, idle, iowait, irq, softirq, steal;
+	long user1, nice1, system1, idle1, iowait1, irq1, softirq1, steal1;
 
 	//fields represent time spen in various CPU modes
-	ss >> cpuLabel >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal;
+	ss1 >> cpuLabel >> user1 >> nice1 >> system1 >> idle1 >> iowait1 >> irq1 >> softirq1 >> steal1;
 
 	//idle time = idle + iowait
-	long prevIdleTime = idle + iowait;
+	long prevIdleTime = idle1 + iowait1;
 	//total time = all fields together
-	long prevTotalTime = user + nice + system + idle + iowait + irq + softirq + steal;
+	long prevTotalTime = user1 + nice1 + system1 + idle1 + iowait1 + irq1 + softirq1 + steal1;
 
-	//wait for a short interbal before second sample
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	
 	//reopen file for second sample
-	file.clear();				//clear EOF flat
-	file.seekg(0);				//go back to the beginning
-	std::getline(file, line);
-	ss.clear();
-	ss.str(line);
-	ss.str(line);
-	ss >> cpuLabel >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal;
+	file.close();                // close file completely
+	//wait for a short interbal before second sample
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 
-	long idleTime = idle + iowait;
-	long totalTime = user + nice + system + idle + iowait + irq + softirq + steal;
+	std::ifstream file2(CPU_FILE);
+	if (!file2.is_open()) {
+		throw std::runtime_error("Failed to reopen CPU info file: " + CPU_FILE);
+	}
+
+	std::getline(file2, line);   // read updated CPU stats
+	std::istringstream ss2(line);
+
+	long user2, nice2, system2, idle2, iowait2, irq2, softirq2, steal2;
+	ss2 >> cpuLabel >> user2 >> nice2 >> system2 >> idle2 >> iowait2 >> irq2 >> softirq2 >> steal2;
+
+	long idleTime = idle2 + iowait2;
+	long totalTime = user2 + nice2 + system2 + idle2 + iowait2 + irq2 + softirq2 + steal2;
 
 	//calcualte deltas = how much time has passed between the two readings
 	long deltaIdle = idleTime - prevIdleTime;
