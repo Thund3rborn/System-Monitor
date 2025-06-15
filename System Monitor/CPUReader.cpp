@@ -57,5 +57,60 @@ float CPUReader::getCPUUsage()
 #else
 
 //Linux implementation will come here later
+#include <fstream>
+#include <sstream>
+#include <thread>
+#include <chrono>
+
+const::std::string CPU_FILE = "/proc/stat";
+
+//returns CPU usage on Linux using /proc/stat sampling
+float CPUReader::getCPUUsage()
+{
+	std::ifstream file(CPU_FILE);
+	if (!file.is_open())
+	{
+		throw std::runtime_error("Failed to open CPU info file: " + CPU_FILE);
+	}
+
+	//read first line of /proc/stat (contains aggregate CPU stats)
+	std::string line;
+	std::getline(file, line);
+	std::istringstream ss(line);
+	std::string cpuLabel;
+	long user, nice, system, idle, iowait, irq, softirq, steal;
+
+	//fields represent time spen in various CPU modes
+	ss >> cpuLabel >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal;
+
+	//idle time = idle + iowait
+	long prevIdleTime = idle + iowait;
+	//total time = all fields together
+	long prevTotalTime = user + nice + system + idle + iowait + irq + softirq + steal;
+
+	//wait for a short interbal before second sample
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	
+	//reopen file for second sample
+	file.clear();				//clear EOF flat
+	file.seekg(0);				//go back to the beginning
+	std::getline(file, line);
+	ss.clear();
+	ss.str(line);
+	ss.str(line);
+	ss >> cpuLabel >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal;
+
+	long idleTime = idle + iowait;
+	long totalTime = user + nice + system + idle + iowait + irq + softirq + steal;
+
+	//calcualte deltas = how much time has passed between the two readings
+	long deltaIdle = idleTime - prevIdleTime;
+	long deltaTotal = totalTime - prevTotalTime;
+
+	if (deltaTotal == 0) return 0.0f;
+
+	//calculate CPU usage: (busy time / total time) * 100
+	return 100.0f * (1.0f - static_cast<float>(deltaIdle) / deltaTotal);
+}
 
 #endif
