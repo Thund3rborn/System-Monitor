@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /System Monitor/System Monitor.vcxproj
 /System Monitor/System Monitor.vcxproj.filters
+/System Monitor/sysmon
