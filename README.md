@@ -57,7 +57,7 @@ System Monitor/
 sudo apt update
 sudo apt install g++
 
-git clone https://github.com/<your-username>/System-Monitor.git
+git clone https://git@github.com:Thund3rborn/System-Monitor.git
 cd "System Monitor"
 make
 ./sysmon
